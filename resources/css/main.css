@@ -1,0 +1,172 @@
+
+body {
+    background-color: rgb(0, 255, 238);
+    font-family: "Bradley Hand, cursive	", cursive;
+    margin: 0;
+}
+
+.navigation {
+    flex: 0;
+    background-color: rgb(0, 255, 183);    
+    display: flex;
+    border: 2px solid black;
+}
+
+.navigation ul {
+    font-size: 0.75em;
+    list-style-type: none;
+    padding: 0;
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+    height: 100%;
+}
+
+.navigation li {
+    background-color: rgb(0, 255, 136);
+    padding: 10px;
+    border: 2px solid black;
+    border-radius: 30px;
+}
+
+.navigation button {
+    background-color: transparent;
+    border: none;
+    font-family: inherit;
+    font-size: inherit;
+}
+
+
+/* extra credit mouse hover. */
+/* https://blog.hubspot.com/website/css-hover-animation */
+/* .navigation button li:hover {
+    background-color: rgb(115, 255, 0);
+} */
+.navigation li:hover {
+    background-color: rgb(115, 255, 0);
+}
+
+h1 {
+    font-size: 2.5em;
+    text-align: center;
+}
+
+h2 {
+    font-size: 1em;
+    text-align: center;
+}
+
+img {
+    display: block;
+    margin: 0 auto;
+    width: 75%;
+}
+
+.infoText {
+    flex: 1;
+    background-color: rgb(98, 255, 0);
+    border: 2px solid black;
+    border-radius: 15px;
+    width: 50%;
+    margin: 0 auto;
+    justify-content: center;
+}
+
+strong {
+    color: red;
+}
+
+em {
+    color: rgb(255, 0, 200);
+}
+
+form {
+    padding: 10px;
+    border: 2px solid black;
+    border-radius: 15px;
+    background-color: blueviolet;
+    width: 30%;
+    margin: 0 auto;
+}
+
+iframe {
+    border: 1px solid black;
+    padding: 20px;
+    border-radius: 15px;
+    background-color: green;
+    margin: 0 auto;
+    display: block;
+}
+
+.reviews {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content:space-evenly;
+}
+
+.review {
+    border: 1px solid black;
+    border-radius: 15px;
+    padding: 10px;
+    margin: 10px;
+    width: 40%;
+}
+
+.review .reviewer-name {
+    text-align: right;
+    font-weight: bold;
+    font-family: 'Times New Roman', sans-serif;
+}
+
+table {
+    border: 1px solid;
+    margin-left: auto;
+    margin-right: auto;
+    background-color: black;
+}
+
+th, td {
+    border: 1px solid;
+    text-align: center;
+}
+
+tr:nth-child(even) {
+    background-color: white
+}
+
+tr:nth-child(odd) {
+    background-color: lightgray;
+}
+
+tr:hover {
+    background-color: rgb(80, 255, 89);
+}
+
+#salesBanner {
+    background-color: #51e2f5;    
+    border: 2px solid black;
+    width: 40%;
+    margin: auto;
+    text-align: center;
+    margin-top: 20px;
+    display: none;
+}
+
+#setSale {
+    background-color: #51e2f5;    
+    border: 2px solid black;
+    width: 20%;
+    margin: auto;
+    text-align: center;
+    margin-top: 20px;
+}
+
+#saleConfirmation {
+    background-color: #51e2f5;    
+    border: 2px solid black;
+    width: 20%;
+    margin: auto;
+    text-align: center;
+    margin-top: 20px;
+    display: none;
+}
