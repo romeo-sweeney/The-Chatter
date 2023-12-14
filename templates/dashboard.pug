@@ -3,6 +3,7 @@ html(lang="en")
   head
     link(rel='stylesheet' type='text/css' href='/resources/css/dark.css')
     script(src='/resources/js/landingPage.js')
+    script(src='/resources/js/dashboard.js')
     title Dashboard
     meta(charset="UTF-8")
   body
@@ -25,9 +26,9 @@ html(lang="en")
                 p author name
               p= post
               .likes
-                button(id='like-button', type='button')
-                  img(src='resources/images/heart.png', alt='heart image')
-                p 8
+                .heart
+                .heartNumber 
+                  span 8
         #pagination 
           h2 Page number here
       #postCreation
@@ -35,7 +36,7 @@ html(lang="en")
         form(action='/publishPost', method='post')
           textarea(id='createPostTextArea', name='createPostTextArea', rows='5', cols='30', placeholder="Type Here ... (Limit 200 characters)")
           br
-          button(id='publishPostButton', type='button') Publish
+          input(type='submit' value='Publish' name='publishPost')
 
 
     

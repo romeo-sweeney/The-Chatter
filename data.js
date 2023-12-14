@@ -15,9 +15,15 @@ var connPool = mysql.createPool({
 
 async function loginUser(usernameOrEmail, userPassword) {
   try {
-    const result = await connPool.awaitQuery("SELECT * FROM user WHERE username=? AND userPassword=?", [usernameOrEmail, userPassword])
+    const resultWithUsername = await connPool.awaitQuery("SELECT * FROM user WHERE username=? AND userPassword=?", [usernameOrEmail, userPassword])
     const resultWithEmail = await connPool.awaitQuery("SELECT * FROM user WHERE email=? AND userPassword=?", [usernameOrEmail, userPassword])
-    return result.length == 1 || resultWithEmail.length == 1;
+    if (resultWithUsername.length == 1) {
+      return await connPool.awaitQuery("SELECT userID FROM user WHERE username=?", [usernameOrEmail]);
+    } else if (resultWithEmail.length == 1) {
+      return await connPool.awaitQuery("SELECT userID FROM user WHERE email=?", [usernameOrEmail]);
+    } else {
+      return false;
+    }
   } catch (error) {
     console.log(error.message);
     return false;
@@ -70,7 +76,7 @@ async function addUser(firstName, lastName, username, userPassword, email) {
 
 async function createPost(post, userID) {
   try {
-    const result = await connPool.awaitQuery("INSERT INTO posts (post, userID) VALUES (?, ?);", [post, userID]);
+    const result = await connPool.awaitQuery("INSERT INTO post (postText, userID) VALUES (?, ?);", [post, userID]);
     return result.affectedRows == 1;
   } catch (error) {
     console.log(error.message);
@@ -80,12 +86,18 @@ async function createPost(post, userID) {
 
 async function getAllPosts() {
   try {
-    const result = await connPool.awaitQuery("SELECT * FROM posts;");
-    return result.length >= 1;
+    const result = await connPool.awaitQuery("SELECT * FROM post;");
+    if (result.length >= 1) {
+      return result;
+    } else {
+      return false;
+    }
   } catch (error) {
     console.log(error.message);
     return false;
   }
 }
+
+getAllPosts().then(console.log);
 
 module.exports = {checkUserExists, addUser, loginUser, createPost, getAllPosts}

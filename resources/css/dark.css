@@ -187,26 +187,59 @@ input[type="submit"]:hover {
 
 .main .postsContainer .post .likes {
     display: flex;
+    flex-direction: row; /* Updated to display children in a row */
     justify-content: center;
+    align-items: center;
 }
 
-.main .postsContainer .post .likes button {
-    background-color: #2d6a4f; /* Set your background color */
-    border: none;
-    cursor: pointer;
-    outline: none;
+.heart {
+    background-color: white;
+    display: inline-block;
+    height: 10px;
+    margin: 0 5px;
+    transform: rotate(-45deg);
+    width: 10px;
 }
 
-.main .postsContainer .post .likes img {
-    width: 20px; /* Set the width of your image */
-    height: auto; /* Maintain the aspect ratio */
+.heart:before,
+.heart:after {
+    content: "";
+    background-color: white;
+    border-radius: 50%;
+    height: 10px;
+    position: absolute;
+    width: 10px;
+}
+
+.heart:before {
+    top: -5px;
+    left: 0;
+}
+
+.heart:after {
+    left: 5px;
+    top: 0;
+}
+
+.heart:hover {
+    box-shadow: 0 0 30px 10px rgb(167, 138, 138);
+}
+
+.heartClicked,
+.heartClicked:before,
+.heartClicked:after {
+    background-color: red;
+}
+
+.heartNumber {
+    margin-left: 2px;
 }
 
 .main #postCreation {
-    border: 2px solid #333;
+    border: 3px solid black;
     border-radius: 10px;
     padding: 20px;
-    background-color: #dad7cd;
+    background-color: #94b484;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     max-width: 400px;
     width: 100%;
@@ -214,7 +247,10 @@ input[type="submit"]:hover {
 }
 
 .main #postCreation h3 {
-    color: #333;
+    color: #ffffff;
+    font-size: x-large;
+    margin-top: 0px;
+    padding-top: 0px;
 }
 
 .main #postCreation form {

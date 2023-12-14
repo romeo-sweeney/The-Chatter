@@ -42,9 +42,8 @@ app.post('/loggedIn', (req, res) => {
   data.loginUser(req.body.usernameOrEmail, req.body.userPassword)
     .then((result) => {
       if (result) {
-        // Login success, set session and redirect to main page
-        req.session.user = { username: req.body.usernameOrEmail };
-        // res.send("success"); // Send success and redirect
+        // Login success, set session to userID and redirect to main page
+        req.session.user = { userID: result[0].userID };
         res.redirect("/dashboard");
       } else {
         // Login failed, render login page with error message
@@ -105,6 +104,23 @@ app.get('/dashboard', (req, res) => {
     res.redirect('/login'); // Redirect to the login page if the user is not authenticated
   }
 });
+
+app.post('/publishPost', (req, res) => {
+  const post = req.body.createPostTextArea;
+  data.createPost(post, req.session.user.userID)
+  .then((result) => {
+    if (result) {
+      // print success message on frontend
+      res.redirect('/dashboard');
+    } else {
+      res.render("404");
+    }
+  })
+  .catch((error) => {
+    console.error(error.message);
+    res.redirect('/dashboard');
+  });
+})
 
 app.get('/logout', (req, res) => {
   // Destroy the session on logout
