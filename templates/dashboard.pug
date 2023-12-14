@@ -1,0 +1,42 @@
+doctype html
+html(lang="en")
+  head
+    link(rel='stylesheet' type='text/css' href='/resources/css/dark.css')
+    script(src='/resources/js/landingPage.js')
+    title Dashboard
+    meta(charset="UTF-8")
+  body
+    include navigations.pug
+    h1#dashboard Welcome to 
+      |
+      i The Chatter
+    
+    .main
+      .middle
+        .sorting
+          label#dashboard(for='sort') Sort By: 
+            select#dashboard(name='sort')
+              option(value='newest') Sort by newest
+              option(value='likeCount') Sort by like count
+        .postsContainer
+          each post in posts
+            .post
+              #author
+                p author name
+              p= post
+              .likes
+                button(id='like-button', type='button')
+                  img(src='resources/images/heart.png', alt='heart image')
+                p 8
+        #pagination 
+          h2 Page number here
+      #postCreation
+        h3 Create Post
+        form(action='/publishPost', method='post')
+          textarea(id='createPostTextArea', name='createPostTextArea', rows='5', cols='30', placeholder="Type Here ... (Limit 200 characters)")
+          br
+          button(id='publishPostButton', type='button') Publish
+
+
+    
+

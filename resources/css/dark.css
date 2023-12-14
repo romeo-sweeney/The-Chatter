@@ -1,0 +1,244 @@
+
+body {
+    font-family: "Bradley Hand, cursive	", cursive;
+    color: #fff;
+    text-align: center;
+    margin: 0;
+    padding: 0;
+    background-color: #354f52;
+}
+
+h1 {
+    text-align: center;
+    font-size: 350%;
+}
+
+.login h2 {
+    margin-top: 0;
+}
+
+.login {
+    max-width: 400px;
+    margin: 50px auto;
+    padding: 20px;
+    background-color: #333;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
+.login a {
+    color: red;
+}
+
+form {
+    text-align: left;
+}
+
+label {
+    display: block;
+    margin-top: 10px;
+}
+
+input {
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+    box-sizing: border-box;
+}
+
+p#loginError {
+    margin-top: 20px;
+    margin-bottom: 8px;
+    color: red;
+    text-align: center;
+
+}
+
+input[type="submit"] {
+    margin-top: 20px;
+    background-color: #864f3b;
+    cursor: pointer;
+}
+
+input[type="submit"]:hover {
+    background-color: #ff6347;
+}
+
+.landingPage {
+    max-width: 400px;
+    margin: 50px auto;
+    padding: 20px;
+    background-color: #333;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+  
+
+.signup {
+    max-width: 400px;
+    margin: 50px auto;
+    padding: 20px;
+    background-color: #333;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
+.signup form {
+    text-align: left;
+}
+
+.signup label {
+    display: block;
+    margin-top: 10px;
+    color: #fff; /* Text color for labels */
+}
+
+.signup input {
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+    box-sizing: border-box;
+}
+
+.signup input[type="submit"] {
+    margin-top: 20px;
+    background-color: #864f3b;
+    color: #fff; /* Text color for the submit button */
+    cursor: pointer;
+}
+
+.signup input[type="submit"]:hover {
+    background-color: #ff6347;
+}
+
+.navigation ul {
+    background-color: #527967;
+    display: flex;
+    flex-direction: row;
+    justify-content:space-around;
+    margin: 0;
+    padding: 1vh;
+    color: white;
+    cursor: crosshair;
+    list-style-type: none;
+}
+
+.navigation li {
+    background-color: rgb(37, 80, 37);
+    display:block;
+    border: 3.5px solid black;
+    border-radius: 35px;
+
+}
+
+.navigation li:hover {
+    background-color: rgb(120, 178, 32);
+}
+
+.navigation ul li a {
+    margin: 10px;
+    text-decoration: none;
+    color: white;
+    font-size: 100%;
+}
+
+.main {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    /* justify-content: center; */
+    align-items: center;
+}
+
+.main .middle {
+    display: flex;
+    flex-direction: column;
+    max-width: 50%;
+    align-items: center;
+    border: 5px solid black;
+    border-radius: 100px;
+    background-color: #52796f;
+}
+
+.main .middle .sorting {
+    font-size:x-large;
+}
+
+.main .postsContainer {
+    display: flex;
+    flex-direction: column;
+    max-width: 40%;
+    align-items: center;
+}
+
+.main .postsContainer .post {
+    border: 5px solid black;
+    width: 170%;
+    margin: 10px;
+    padding: 10px;
+    border-radius: 20px;
+    background-color: #2d6a4f;
+}
+
+.main .postsContainer .post #author {
+    text-align: left;
+    /* text-justify: auto; */
+}
+
+.main .postsContainer .post .likes {
+    display: flex;
+    justify-content: center;
+}
+
+.main .postsContainer .post .likes button {
+    background-color: #2d6a4f; /* Set your background color */
+    border: none;
+    cursor: pointer;
+    outline: none;
+}
+
+.main .postsContainer .post .likes img {
+    width: 20px; /* Set the width of your image */
+    height: auto; /* Maintain the aspect ratio */
+}
+
+.main #postCreation {
+    border: 2px solid #333;
+    border-radius: 10px;
+    padding: 20px;
+    background-color: #dad7cd;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    max-width: 400px;
+    width: 100%;
+    align-self: flex-start;
+}
+
+.main #postCreation h3 {
+    color: #333;
+}
+
+.main #postCreation form {
+    display: flex;
+    flex-direction: column;
+}
+
+.main #postCreation form textarea {
+    margin: 10px 0;
+    padding: 10px;
+    border: 1px solid black;
+    border-radius: 5px;
+    resize: none;
+}
+
+.main #postCreation form button {
+    background-color: #3498db;
+    color: #fff;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.main #postCreation form button:hover {
+    background-color: #2980b9;
+}

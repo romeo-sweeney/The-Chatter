@@ -1,0 +1,23 @@
+doctype html
+html(lang="eng")
+  head
+    link(rel='stylesheet' type='text/css' href='/resources/css/dark.css')
+    title Login
+    meta(charset='UTF-8')
+  body
+    include navigations.pug
+    h1 Welcome to 
+      |
+      i The Chatter
+    .login
+        h2 Login to your account
+        form(action='/loggedIn' method='post')
+            label(for='usernameOrEmail')  Username or Email: 
+            input#username(type='text' name='usernameOrEmail' required='')
+            br
+            label(for='userPassword')  Password:  
+            input#userPassword(type='password' name='userPassword' required='')
+            br
+            if errorMessage
+              p#loginError #{errorMessage}
+            input#submit(type='submit' value='Login')

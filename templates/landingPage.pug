@@ -1,0 +1,16 @@
+doctype html
+html(lang="eng")
+  head
+    link(rel='stylesheet' type='text/css' href='/resources/css/dark.css')
+    script(src='/resources/js/landingPage.js')
+    title Welcome
+    meta(charset='UTF-8')
+  body
+    include navigations.pug
+    h1 Welcome to 
+      |
+      i The Chatter
+    .landingPage 
+        h2 Please log in or register to access the chat!
+        button(id='loginButton') Login
+        button(id='signUpButton') Sign Up

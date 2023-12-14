@@ -1,155 +1,126 @@
+// Imports
 const data = require('./data');
 const express = require('express');
-const basicAuth = require('express-basic-auth')
+const session = require('express-session');
+
+// Objects
 const app = express();
 const port = 4131;
 
-const authorization = basicAuth({
-    users: { 'admin': 'password' },
-    challenge: true,
-    realm: "User Visible Realm"
-});
-
-app.set("views", "templates");
-app.set("view engine", "pug");
-
-app.use(express.urlencoded({extended:true}));
+// Middleware
+app.use(session({
+  secret: 'fjdv8982++_&554vmd??ji',
+  resave: false,
+  saveUninitialized: true,
+}));
+app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use('/resources', express.static('resources'));
 
-// Extra credit middleware function
-// app.use((req, res, next) => {
-//     console.log("***********************************");
-//     console.log(`Processing a ${req.method} request for ${req.url}`);
-//     next();
-//     console.log(`Server sent back a ${res.statusCode} code`);
-//     console.log(`The sale is ${isSales ? "active" : "not active"}`);
-//     console.log(`There are ${data.getContactData().length} contacts`);
-//     console.log();
-// });
+// Pug templates
+app.set("views", "templates");
+app.set("view engine", "pug");
 
-
-app.get('/', (req , res) => {
-    res.render("mainpage");
+// Routes
+app.get('/', (req, res) => {
+  res.render("landingPage");
 });
 
 app.get('/main', (req, res) => {
-    res.render("mainpage");
+  res.render("landingPage");
 });
 
-app.get('/contact', (req, res) => {
-    res.render("contactform");
+app.get('/login', (req, res) => {
+  res.render("login");
 });
 
-app.post('/contact', (req , res) => {
-    data.addContact(req.body)
-    .then(() => {
-        res.status(201).render("contactLogErrorless");
+app.get('/signup', (req, res) => {
+  res.render("signup");
+});
+
+app.post('/loggedIn', (req, res) => {
+  data.loginUser(req.body.usernameOrEmail, req.body.userPassword)
+    .then((result) => {
+      if (result) {
+        // Login success, set session and redirect to main page
+        req.session.user = { username: req.body.usernameOrEmail };
+        // res.send("success"); // Send success and redirect
+        res.redirect("/dashboard");
+      } else {
+        // Login failed, render login page with error message
+        res.render("login", { errorMessage: "Incorrect username or password, please try again" });
+      }
     })
-    .catch(error => {
-        res.status(400).render("contactLogError");    
-    })
-});
-
-app.get('/testimonies', (req, res) => {
-    res.render("testimonies")
-});
-
-app.get('/admin/contactlog', authorization, (req, res) => {
-    data.getContacts()
-    .then(contacts => {
-        res.render("contactlog", { contacts });
-    })
-    .catch(error => {
-        console.log("Error in GET /admin/contactlog", error);
-        res.status(500).send(error.message);
+    .catch((error) => {
+      console.error(error.message);
+      res.render("login");
     });
 });
 
-app.delete('/api/contact', authorization, (req, res) => {
-    const body = req.body;
-    console.log(body);
-    try {
-        if (!("id" in body)) {
-            res.status(400).send("ERROR: JSON object does not contain 'id' property");
-        }
+app.post('/signupPost', (req, res) => {
+  data.checkUserExists(req.body.username, req.body.email)
+    .then((result) => {
+      if (result) {
+        console.log("user already exists in db, redirecting to login");
+        res.render("login");
+      } else {
+        data.addUser(req.body.firstName, req.body.lastName, req.body.username, req.body.userPassword, req.body.email)
+          .then((result) => {
+            if (result) {
+              console.log("Success adding user to db, redirecting to login");
+              res.render("login");
+            } else {
+              console.log("Failed adding user to db, redirecting to signup");
+              res.render("signup");
+            }
+          })
+          .catch((error) => {
+            console.error(error.message);
+            res.render("signup");
+          });
+      }
+    })
+    .catch((error) => {
+      console.error(error.message);
+      res.render("login");
+    });
+});
 
-        const contactId = parseInt(body["id"]);
+app.get('/dashboard', (req, res) => {
+  // Checks if the user is authenticated using session
+  const posts = 
+  [
+    'Sed quisquam distinctio provident unde.',
+    'Quis velit vel est et in.',
+    'Voluptatem dolorum est consequatur in voluptas.',
+    'Autem aperiam sequi dolore aliquam qui.',
+    'Aspernatur beatae architecto quas omnis. I like pAspernatur beatae architecto quas omnis. I like pfkjd la jvklajvl dsjlf djsklaf jdlksa fjlkdsa jflkdsja lf jkls flk jfljas lfdjsajjkvska v. vjavjakvajjkv avjakljvakjvkaj va vjkavj vajkvjakv.  vjakjv vjajvkv vajkkjvfkjd la jvklajvl dsjlf djsklaf jdlksa fjlkdsa jflkdsja lf jkls flk'
+  ]
+  
+  if (req.session.user) {
+    // displays the logout button
+    const display = true;
+    res.render("dashboard", { posts, display })
+  } else {
+    res.redirect('/login'); // Redirect to the login page if the user is not authenticated
+  }
+});
 
-        data.deleteContact(contactId)
-            .then((valid)=> {
-                if (valid) {
-                    res.status(200).send(`Contact ID [${contactId}] has been deleted`);
-                } else {
-                    res.status(404).send(`Contact ID [${contactId}] does not exist in contacts`);
-                }
-
-            })
-            .catch(error => {
-                console.error(error.message);
-                res.status(404).send(`ERROR: Cannot delete row [${contactId}]`);
-            });
-    } catch (e) {
-        console.error(e);
-        res.status(400).send(`ERROR: Unable to parse JSON object: ${body}`);
+app.get('/logout', (req, res) => {
+  // Destroy the session on logout
+  req.session.destroy((err) => {
+    if (err) {
+      console.error(err.message);
     }
+    res.redirect('/login');
+  });
 });
 
-
-app.get('/api/sale', (req, res) => {
-    data.getRecentSales()
-    .then(recentSales => {
-        if (recentSales[0].active) {
-            res.status(200).send({ "active": true, "message": recentSales[0].message});
-        } else {
-            res.status(200).send({ "active": false});
-        }
-    })
-    .catch(error => {
-        console.log("Error in GET /api/sale: ", error);
-        res.status(500).send(error.message);
-    });
-});
-
-app.post('/api/sale', authorization, (req, res) => {
-    data.addSale(req.body.message)
-    .then((result)=> {
-        res.status(200);
-    })
-    .catch(error => {
-        console.log("Error in POST /api/sale", error);
-        res.status(500).send(error.message);
-    });
-});
-
-app.delete('/api/sale', authorization, (req, res) => {
-    data.endSale()
-    .then(()=> {
-        res.status(200).json({ data: {"active": false} });
-    })
-    .catch(error => {
-        console.log("Error in DELETE /api/sale", error);
-        res.status(500).send(error.message);
-    });
-});
-
-app.get('/admin/salelog', authorization, (req, res) => {
-    data.getRecentSales()
-    .then(recentSales=> {
-        res.status(200).json(recentSales);
-    })
-    .catch(error => {
-        console.log("Error in GET /admin/salelog", error);
-        res.status(500).send(error.message);
-    });
-})
-
-// catch all
+// Catch-all route
 app.use((req, res, next) => {
-    res.status(404).render("404");
+  res.status(404).render("404");
 });
 
-
-app.listen(port, () => {   
-    console.log("Server is running on: http://localhost:4131/");
+app.listen(port, () => {
+  console.log("Server is running on: http://localhost:4131/");
 });

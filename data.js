@@ -10,39 +10,34 @@ var connPool = mysql.createPool({
   host: "localhost",// this will work
   user: "C4131F23U205",
   database: "C4131F23U205",
-  password: "42075", // we really shouldn't be saving this here long-term -- and I probably shouldn't be sharing it with you...
+  password: "42075",
 });
 
-// later you can use connPool.awaitQuery(query, data) -- it will return a promise for the query results.
-async function addContact(data) {
+async function loginUser(usernameOrEmail, userPassword) {
   try {
-      const validatedData = await contactValidity(data);
-
-      const name = validatedData.contactName;
-      const email = validatedData.contactEmail;
-      const date = validatedData.dateScheduled;
-      const apptType = validatedData.apptType;
-      const service = validatedData.serviceType;
-      const paymentType = validatedData.paymentType;
-
-      const query = `
-          INSERT INTO contacts (contactName, contactEmail, dateScheduled, apptType, serviceType, paymentType)
-          VALUES (?, ?, ?, ?, ?, ?);
-      `;
-
-      const values = [name, email, date, apptType, service, paymentType];
-
-      return await connPool.awaitQuery(query, values);
+    const result = await connPool.awaitQuery("SELECT * FROM user WHERE username=? AND userPassword=?", [usernameOrEmail, userPassword])
+    const resultWithEmail = await connPool.awaitQuery("SELECT * FROM user WHERE email=? AND userPassword=?", [usernameOrEmail, userPassword])
+    return result.length == 1 || resultWithEmail.length == 1;
   } catch (error) {
-      console.error(error.message);
-      throw new Error("Invalid contact data");
+    console.log(error.message);
+    return false;
   }
 }
 
-async function deleteContact(id) {
+async function checkUserExists(username, email) {
   try {
-    const result = await connPool.awaitQuery("DELETE FROM contacts WHERE id=?;", [id]);
-    // returns false if no rows were affected, else true if 1 row effected
+    const resultUser = await connPool.awaitQuery("SELECT * FROM user WHERE username=?;", [username]);
+    const resultEmail = await connPool.awaitQuery("SELECT * FROM user WHERE email=?;", [email]);
+    return !resultUser && !resultEmail;
+  } catch (error) {
+    console.error(error.message);
+    return false;
+  }
+}
+
+async function addUser(firstName, lastName, username, userPassword, email) {
+  try {
+    const result = await connPool.awaitQuery("INSERT INTO user (firstName, lastName, username, userPassword, email) VALUES (?, ?, ?, ?, ?);", [firstName, lastName, username, userPassword, email]);
     return result.affectedRows !== 0;
   } catch (error) {
     console.error(error.message);
@@ -50,114 +45,47 @@ async function deleteContact(id) {
   }
 }
 
-async function getContacts() {
-  return await connPool.awaitQuery("SELECT * FROM contacts;");
-}
-
-// getContacts().then(console.log);
 
 
-async function addSale(message) {
-  return await connPool.awaitQuery("INSERT INTO sale (saleText, startTime) VALUES (?, CURRENT_TIMESTAMP);", [message]);
-}
+// CREATE TABLE user (
+//   id INT NOT NULL AUTO_INCREMENT,
+//   firstName VARCHAR(50) NOT NULL,
+//   lastName VARCHAR(50) NOT NULL,
+//   username VARCHAR(20) NOT NULL,
+//   userPassword VARCHAR(200) NOT NULL,
+//   email VARCHAR(100) NOT NULL,
+//   PRIMARY KEY (id),
+//   UNIQUE KEY (username),
+//   UNIQUE KEY (email)
+// );
 
-async function endSale() {
-  return await connPool.awaitQuery("UPDATE sale SET endtime = CURRENT_TIMESTAMP WHERE endtime IS NULL");
-}
+// CREATE TABLE posts (
+//   id INT NOT NULL AUTO_INCREMENT,
+//   post VARCHAR(200),
+//   userID INT NOT NULL,
+//   FOREIGN KEY (userID) REFERENCES user(id),
+//   PRIMARY KEY (id)
+// );
 
-async function getAllSales() {
-  return await connPool.awaitQuery("SELECT * FROM sale ORDER BY startTime DESC;")
-}
-// getAllSales().then(console.log)
 
-async function getRecentSales() {
-  let recentSales = await connPool.awaitQuery("SELECT * FROM sale ORDER BY startTime DESC LIMIT 3;")
-  // return recentSales;
-  let sales = [];
-  for (let i = 0; i < recentSales.length; i++) {
-    sales.push({"message": recentSales[i].saleText, "active": recentSales[i].endTime ? 0 : 1})
-  }
-
-  return sales;
-}
-
-async function contactValidity(data) {
-  if (!("contactName" in data &&
-        "contactEmail" in data &&
-        "dateScheduled" in data &&
-        "apptType" in data &&
-        "serviceType" in data &&
-        "submitVal" in data)) {
-      throw new Error("Invalid contact data");
-  }
-
-  // When cash is unchecked, len is 6; when checked, len is 7. Also, check that paymentType attribute is present.
-  if (Object.keys(data).length !== 6 && Object.keys(data).length !== 7) {
-      throw new Error(`ERROR: Data length is [${Object.keys(data).length}].`);
-  }
-
-  let name = data["contactName"];
-  let email = data["contactEmail"];
-  let date = data["dateScheduled"];
-  let apptType = data["apptType"];
-  let service = data["serviceType"];
-  let paymentType = "No";
-
-  // Make sure date is in a valid format
+async function createPost(post, userID) {
   try {
-      new Date(date);
+    const result = await connPool.awaitQuery("INSERT INTO posts (post, userID) VALUES (?, ?);", [post, userID]);
+    return result.affectedRows == 1;
   } catch (error) {
-      throw new Error("Invalid date format");
+    console.log(error.message);
+    return false;
   }
-
-  // Ensure correct apptType
-  if (apptType === "inperson" || apptType === "default") {
-    apptType = "in person";
-  } else if (apptType === "virtual") {
-      apptType = "virtual";
-  } else {
-    throw new Error("Invalid apptType");
-  }
-
-  // Ensure correct service
-  switch (service) {
-    case "instore":
-        service = "In Store Purchase";
-        break;
-    case "oneLesson":
-        service = "One Lesson ($20)";
-        break;
-    case "twoLessons":
-        service = "Two Lessons ($30)";
-        break;
-    case "unlimited":
-        service = "Unlimited Plan ($50/month)";
-        break;
-    case "default":
-        service = "In Store Purchase";
-        break;
-    default:
-      throw new Error("Invalid serviceType");
-  }
-
-  // If paymentType is checked, then Yes for cash
-  if ("paymentType" in data) {
-    paymentType = "Yes";
-  }
-
-  if (data["submitVal"] !== "Submit") {
-    throw new Error("Invalid submitVal");
-  }
-
-  return {
-      "contactName": name,
-      "contactEmail": email,
-      "dateScheduled": date,
-      "apptType": apptType,
-      "serviceType": service,
-      "paymentType": paymentType
-  };
 }
 
+async function getAllPosts() {
+  try {
+    const result = await connPool.awaitQuery("SELECT * FROM posts;");
+    return result.length >= 1;
+  } catch (error) {
+    console.log(error.message);
+    return false;
+  }
+}
 
-module.exports = {addContact, getContacts, deleteContact, addSale, endSale, getRecentSales}
+module.exports = {checkUserExists, addUser, loginUser, createPost, getAllPosts}
