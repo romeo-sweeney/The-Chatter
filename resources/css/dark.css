@@ -153,7 +153,7 @@ input[type="submit"]:hover {
 .main .middle {
     display: flex;
     flex-direction: column;
-    max-width: 50%;
+    width: 50%;
     align-items: center;
     border: 5px solid black;
     border-radius: 100px;
@@ -167,7 +167,7 @@ input[type="submit"]:hover {
 .main .postsContainer {
     display: flex;
     flex-direction: column;
-    max-width: 40%;
+    width: 40%;
     align-items: center;
 }
 
@@ -180,59 +180,38 @@ input[type="submit"]:hover {
     background-color: #2d6a4f;
 }
 
-.main .postsContainer .post #author {
-    text-align: left;
-    /* text-justify: auto; */
+.main .postsContainer .post .author {
+    display: flex;
+    justify-content: space-between;
+}
+
+.main .postsContainer .post .author p {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 0;
 }
 
 .main .postsContainer .post .likes {
     display: flex;
-    flex-direction: row; /* Updated to display children in a row */
+    flex-direction: row;
     justify-content: center;
     align-items: center;
 }
 
-.heart {
-    background-color: white;
-    display: inline-block;
-    height: 10px;
-    margin: 0 5px;
-    transform: rotate(-45deg);
-    width: 10px;
+.main .postsContainer .post .likes button {
+    background-color: Transparent;
+    border: none;
+    cursor:pointer;
 }
 
-.heart:before,
-.heart:after {
-    content: "";
-    background-color: white;
-    border-radius: 50%;
-    height: 10px;
-    position: absolute;
-    width: 10px;
+
+.likes button img {
+    width: 24px;
+    height: 24px;
 }
 
-.heart:before {
-    top: -5px;
-    left: 0;
-}
-
-.heart:after {
-    left: 5px;
-    top: 0;
-}
-
-.heart:hover {
+.likes button img:hover {
     box-shadow: 0 0 30px 10px rgb(167, 138, 138);
-}
-
-.heartClicked,
-.heartClicked:before,
-.heartClicked:after {
-    background-color: red;
-}
-
-.heartNumber {
-    margin-left: 2px;
 }
 
 .main #postCreation {
@@ -277,4 +256,29 @@ input[type="submit"]:hover {
 
 .main #postCreation form button:hover {
     background-color: #2980b9;
+}
+
+
+.paginationContainer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+}
+  
+#paginationLink {
+    text-decoration: none;
+    padding: 5px 10px;
+    background-color: #3a5a40;
+    border-radius: 10px;
+    color: white;
+}
+
+#paginationLink:hover {
+    background-color: #45a049;
+}
+
+#pageNumber {
+    padding: 10px;
+    font-size: larger;
 }

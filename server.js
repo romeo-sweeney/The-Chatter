@@ -87,19 +87,28 @@ app.post('/signupPost', (req, res) => {
 
 app.get('/dashboard', (req, res) => {
   // Checks if the user is authenticated using session
-  const posts = 
-  [
-    'Sed quisquam distinctio provident unde.',
-    'Quis velit vel est et in.',
-    'Voluptatem dolorum est consequatur in voluptas.',
-    'Autem aperiam sequi dolore aliquam qui.',
-    'Aspernatur beatae architecto quas omnis. I like pAspernatur beatae architecto quas omnis. I like pfkjd la jvklajvl dsjlf djsklaf jdlksa fjlkdsa jflkdsja lf jkls flk jfljas lfdjsajjkvska v. vjavjakvajjkv avjakljvakjvkaj va vjkavj vajkvjakv.  vjakjv vjajvkv vajkkjvfkjd la jvklajvl dsjlf djsklaf jdlksa fjlkdsa jflkdsja lf jkls flk'
-  ]
-  
-  if (req.session.user) {
+    if (req.session.user) {
     // displays the logout button
+    let page = parseInt(req.query.page ?? 1)
+    if (!page) {
+        page = 1;
+    }
+    let offset = (page-1)*5
     const display = true;
-    res.render("dashboard", { posts, display })
+    data.getAllPosts()
+    .then((posts)=> {
+      if (posts) {
+        let pagedPosts = posts.slice(offset, offset+5);
+        res.render("dashboard", { pagedPosts, display, page })
+      } else {
+        console.log("error, could not get the posts");
+        res.redirect("/404");
+      }
+    })
+    .catch(error=>{
+      console.log(error.message);
+      res.redirect('/404');
+    })
   } else {
     res.redirect('/login'); // Redirect to the login page if the user is not authenticated
   }
@@ -113,12 +122,27 @@ app.post('/publishPost', (req, res) => {
       // print success message on frontend
       res.redirect('/dashboard');
     } else {
-      res.render("404");
+      res.redirect('/404');
     }
   })
   .catch((error) => {
     console.error(error.message);
     res.redirect('/dashboard');
+  });
+})
+
+app.put('/api/like', (req, res) => {
+  const postID = req.body.postID;
+  data.updateLikes(postID)
+  .then(result=>{
+    if (result) {
+      res.status(200).send('Like incremented for postID: '+ postID);
+    } else {
+      console.log("error in PUT /api/like");
+    }
+  })
+  .catch(error=> {
+    console.log(error.message);
   });
 })
 

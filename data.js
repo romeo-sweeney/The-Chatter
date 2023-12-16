@@ -76,7 +76,7 @@ async function addUser(firstName, lastName, username, userPassword, email) {
 
 async function createPost(post, userID) {
   try {
-    const result = await connPool.awaitQuery("INSERT INTO post (postText, userID) VALUES (?, ?);", [post, userID]);
+    const result = await connPool.awaitQuery("INSERT INTO post (postText, userID, timeEditedOrCreated, likes) VALUES (?, ?, CURRENT_TIMESTAMP, 0);", [post, userID]);
     return result.affectedRows == 1;
   } catch (error) {
     console.log(error.message);
@@ -84,9 +84,20 @@ async function createPost(post, userID) {
   }
 }
 
+async function updateLikes(postID) {
+  try {
+    const result = await connPool.awaitQuery("UPDATE post SET likes=likes+1 WHERE postID=?;", [postID]);
+    return result.affectedRows == 1;
+  } catch (error) {
+    console.log(error.message);
+    return false;
+  } 
+}
+
 async function getAllPosts() {
   try {
-    const result = await connPool.awaitQuery("SELECT * FROM post;");
+    const result = await connPool.awaitQuery("SELECT * FROM post JOIN user ON post.userID = user.userID ORDER BY timeEditedOrCreated DESC;");
+
     if (result.length >= 1) {
       return result;
     } else {
@@ -98,6 +109,15 @@ async function getAllPosts() {
   }
 }
 
-getAllPosts().then(console.log);
+// pagination plan:
+// 1. count the number of posts in database. -> COUNT(posts)
+// 2. Divive the number of posts by 5, the remainder, if any will be on the last page.
+// 3. This number will be the number of pages. So when we get all the posts, in order desired (array)
+// 4. We see what current page they are on, and return the portion of the array that represents that page.
+// 5. Have a next button if on the first page. Then prev and next on subsequent pages. Prev only button on last page.
 
-module.exports = {checkUserExists, addUser, loginUser, createPost, getAllPosts}
+
+// Scenario: User is on page 3/6 and clicks next. We want to return the portion in the array [5*4....(5*5))
+// for (let i = 5*pageNumber; i < 5*pageNumber+1; i++)
+
+module.exports = {checkUserExists, addUser, loginUser, createPost, getAllPosts, updateLikes}

@@ -20,17 +20,27 @@ html(lang="en")
               option(value='newest') Sort by newest
               option(value='likeCount') Sort by like count
         .postsContainer
-          each post in posts
+          each post in pagedPosts
             .post
-              #author
-                p author name
-              p= post
+              .author
+                p #{post.firstName} #{post.lastName}
+                #edit
+                  button(type='button', id=`editButton${post.postID}`) Edit
+              p #{post.postText}
               .likes
-                .heart
-                .heartNumber 
-                  span 8
-        #pagination 
-          h2 Page number here
+                button(type='button', id=`heartButton${post.postID}`)
+                  img(src='resources/images/whiteHeart.png', alt='heart picture')
+                  span #{post.likes}
+        .pagination
+          if page
+            nav.paginationContainer
+              if page>=2
+                a(href=`/dashboard?page=${page-1}`, id='paginationLink') Prev 
+                span#pageNumber= page
+
+              else
+                span#pageNumber= page
+              a(href=`/dashboard?page=${page+1}`, id='paginationLink') Next
       #postCreation
         h3 Create Post
         form(action='/publishPost', method='post')

@@ -18,6 +18,8 @@ CREATE TABLE post (
   id INT NOT NULL AUTO_INCREMENT,
   postText VARCHAR(200),
   userID INT NOT NULL,
+  timeEditedOrCreated TIMESTAMP NOT NULL,
+  likes INT NOT NULL,
   FOREIGN KEY (userID) REFERENCES user(id),
   PRIMARY KEY (id)
 );
