@@ -94,9 +94,16 @@ async function updateLikes(postID) {
   } 
 }
 
-async function getAllPosts() {
+async function getAllPosts(sortingMethod) {
   try {
-    const result = await connPool.awaitQuery("SELECT * FROM post JOIN user ON post.userID = user.userID ORDER BY timeEditedOrCreated DESC;");
+    let result = null;
+    if (sortingMethod === 'newest') {
+      result = await connPool.awaitQuery("SELECT * FROM post JOIN user ON post.userID = user.userID ORDER BY timeEditedOrCreated DESC;");
+    } else if (sortingMethod === 'likeCount') {
+      result = await connPool.awaitQuery("SELECT * FROM post JOIN user ON post.userID = user.userID ORDER BY likes DESC;");
+    } else {
+      return false;
+    }
 
     if (result.length >= 1) {
       return result;

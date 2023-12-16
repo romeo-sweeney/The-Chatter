@@ -43,7 +43,7 @@ app.post('/loggedIn', (req, res) => {
     .then((result) => {
       if (result) {
         // Login success, set session to userID and redirect to main page
-        req.session.user = { userID: result[0].userID };
+        req.session.user = { userID: result[0].userID, sortingMethod: 'newest' };
         res.redirect("/dashboard");
       } else {
         // Login failed, render login page with error message
@@ -85,6 +85,11 @@ app.post('/signupPost', (req, res) => {
     });
 });
 
+app.get('/bypass', (req,res) => {
+  req.session.user = { userID: '1', sortingMethod: 'newest' };
+  res.redirect('/dashboard');
+})
+
 app.get('/dashboard', (req, res) => {
   // Checks if the user is authenticated using session
     if (req.session.user) {
@@ -95,7 +100,8 @@ app.get('/dashboard', (req, res) => {
     }
     let offset = (page-1)*5
     const display = true;
-    data.getAllPosts()
+    console.log(req.session.user.sortingMethod);
+    data.getAllPosts(req.session.user.sortingMethod)
     .then((posts)=> {
       if (posts) {
         let pagedPosts = posts.slice(offset, offset+5);
@@ -144,6 +150,11 @@ app.put('/api/like', (req, res) => {
   .catch(error=> {
     console.log(error.message);
   });
+})
+
+app.put('/api/sortingMethod', (req, res) => {
+  req.session.user.sortingMethod = req.body.sortingMethod;
+  res.status(200).send('success');
 })
 
 app.get('/logout', (req, res) => {

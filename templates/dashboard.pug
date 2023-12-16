@@ -15,8 +15,8 @@ html(lang="en")
     .main
       .middle
         .sorting
-          label#dashboard(for='sort') Sort By: 
-            select#dashboard(name='sort')
+          label(for='sort') Sort By: 
+            select(name='sort', id='sort')
               option(value='newest') Sort by newest
               option(value='likeCount') Sort by like count
         .postsContainer
@@ -30,7 +30,7 @@ html(lang="en")
               .likes
                 button(type='button', id=`heartButton${post.postID}`)
                   img(src='resources/images/whiteHeart.png', alt='heart picture')
-                  span #{post.likes}
+                span(id=`likesNumber${post.postID}`) #{post.likes}
         .pagination
           if page
             nav.paginationContainer

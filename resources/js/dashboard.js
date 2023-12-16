@@ -23,8 +23,8 @@ document.addEventListener("DOMContentLoaded", () => {
             })
             .then((response)=>{
                 if (response.status === 200) {
-                    const likeNumber = document.querySelector(`#heartButton${postID} span`);
-                    likeNumber.innerText = parseInt(heartButton.innerText)+1;
+                    const likesNumber = document.getElementById(`likesNumber${postID}`);
+                    likesNumber.innerText = parseInt(likesNumber.innerText)+1;
                     const heartImg = document.querySelector(`#heartButton${postID} img`);
                     console.log(heartImg.src);
                     if (heartImg.src.includes('resources/images/whiteHeart.png')) {
@@ -38,8 +38,42 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             })
             .catch(error => {  
-                console.error('Error:', error);
+                console.error(error.message);
             });
         });
     }
+
+
+
+    console.log("Code is running");
+
+    const sorting = document.getElementById('sort');
+    
+    if (sorting) {
+        console.log("Element with ID 'sort' found");
+        console.log("Sorting value:", sorting.value);
+        sorting.addEventListener('change', ()=> {
+            fetch('/api/sortingMethod', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({'sortingMethod': sorting.value})
+            }).then((response)=>{
+                if (response.status === 200) {
+                    console.log("Sorting changed")
+                    location.reload()
+
+                } else {
+                    throw new Error('Error sorting could not be changed.');
+                }
+            })
+            .catch((error) => {
+                console.log(error.message);
+            })
+        });
+    } else {
+        console.log("Element with ID 'sort' not found");
+    }
+    
 });

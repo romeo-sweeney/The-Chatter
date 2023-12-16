@@ -195,7 +195,7 @@ input[type="submit"]:hover {
     display: flex;
     flex-direction: row;
     justify-content: center;
-    align-items: center;
+    align-content: center;
 }
 
 .main .postsContainer .post .likes button {
@@ -203,7 +203,6 @@ input[type="submit"]:hover {
     border: none;
     cursor:pointer;
 }
-
 
 .likes button img {
     width: 24px;
