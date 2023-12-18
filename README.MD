@@ -10,7 +10,7 @@ generating dynamic content that is simple and efficient.
 1: ```git clone https://github.com/romeo-sweeney/The-Chatter```<br/>
 2: ```cd The-Chatter```<br/>
 3: ```npm init```<br/>
-4: ```npm install express pug bcrypt express-session mysql-await```<br/>
+4: ```npm install express pug bcrypt express-session mysql-await tunnel-ssh prompt```<br/>
 5: ```node tunnel.js```<br/>
 6: Authenticate as a umn.edu user to create a tunnel into the CSE labs firewall.<br/>
 7: Open a new terminal and navigate to the project.<br/>
