@@ -6,7 +6,7 @@ This website uses the express framework and MySQL db for the server. Pug templat
 generating dynamic content that is simple and efficient. 
 
 ### How to install and run:
-0: Ensure ```node``` is installed locally. For more information visit: https://nodejs.org/en/learn/getting-started/how-to-install-nodejs 
+0: Ensure ```node``` is installed locally. For more information visit: https://nodejs.org/en/learn/getting-started/how-to-install-nodejs <br/>
 1: ```git clone https://github.com/romeo-sweeney/The-Chatter```<br/>
 2: ```cd <The-Chatter Project>```<br/>
 3: ```npm init```<br/>
