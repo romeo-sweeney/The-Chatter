@@ -7,11 +7,12 @@ generating dynamic content simple and efficient.
 
 ### How to install and run:
 1: ```git clone https://github.com/romeo-sweeney/The-Chatter```<br/>
-2: ```cd <The-Chatter Project>```
-3: ```npm init```
-4: ```npm install express```
-5: ```npm install pug```
-6: ```npm install bcrypt```
-7: ```npm install express-session```
-8. ```npm install mysql-await```
-9: ```node server.js```
+2: ```cd <The-Chatter Project>```<br/>
+3: ```npm init```<br/>
+4: ```npm install express```<br/>
+5: ```npm install pug```<br/>
+6: ```npm install bcrypt```<br/>
+7: ```npm install express-session```<br/>
+8. ```npm install mysql-await```<br/>
+9: ```node server.js```<br/>
+10. Navigate to browser of choice and type: ```localhost:4131/```
