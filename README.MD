@@ -12,5 +12,6 @@ generating dynamic content that is simple and efficient.
 4: ```npm install express pug bcrypt express-session mysql-await```<br/>
 5: ```node tunnel.js```<br/>
 6: Authenticate as a umn.edu user to create a tunnel into the CSE labs firewall.<br/>
-7: ```node server.js```<br/>
-8: Navigate to the browser of choice and type: ```localhost:4131/```
+7: Open a new terminal and navigate to <The-Chatter><br/>
+8: ```node server.js```<br/>
+9: Navigate to the browser of choice and type: ```localhost:4131/```
