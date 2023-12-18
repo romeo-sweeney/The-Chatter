@@ -90,7 +90,7 @@ input[type="submit"]:hover {
 .signup label {
     display: block;
     margin-top: 10px;
-    color: #fff; /* Text color for labels */
+    color: #fff;
 }
 
 .signup input {
@@ -103,7 +103,7 @@ input[type="submit"]:hover {
 .signup input[type="submit"] {
     margin-top: 20px;
     background-color: #864f3b;
-    color: #fff; /* Text color for the submit button */
+    color: #fff;
     cursor: pointer;
 }
 
@@ -128,7 +128,6 @@ input[type="submit"]:hover {
     display:block;
     border: 3.5px solid black;
     border-radius: 35px;
-
 }
 
 .navigation li:hover {
@@ -171,34 +170,56 @@ input[type="submit"]:hover {
     align-items: center;
 }
 
-.main .postsContainer .post {
+.main .postsContainer div[id^="postElement"]
+{
     border: 5px solid black;
     width: 170%;
     margin: 10px;
     padding: 10px;
     border-radius: 20px;
     background-color: #2d6a4f;
+    word-wrap: break-word;
 }
 
-.main .postsContainer .post .author {
+.main .postsContainer div[id^="postElement"] .author {
     display: flex;
     justify-content: space-between;
 }
 
-.main .postsContainer .post .author p {
+.main .postsContainer div[id^="postElement"] .author p {
     display: flex;
     justify-content: space-between;
     margin-top: 0;
 }
 
-.main .postsContainer .post .likes {
+.editDeleteButtons {
+    display: flex;
+    justify-content: flex-end;
+    height: 20px;
+    width: 20px;
+}
+
+.editDeleteButtons button {
+    margin-left: 2px;
+    margin-right: 2px;
+    background-color: #864f3b;
+    color: #fff;
+    cursor: pointer;
+}
+
+.editDeleteButtons button:hover {
+    background-color: #de4b15;
+}
+
+
+.main .postsContainer div[id^="postElement"] .likes {
     display: flex;
     flex-direction: row;
     justify-content: center;
     align-content: center;
 }
 
-.main .postsContainer .post .likes button {
+.main .postsContainer div[id^="postElement"] .likes button {
     background-color: Transparent;
     border: none;
     cursor:pointer;
@@ -280,4 +301,39 @@ input[type="submit"]:hover {
 #pageNumber {
     padding: 10px;
     font-size: larger;
+}
+
+.editPost {
+    display: none;
+    justify-content: center;
+}
+
+.editPost textarea {
+    padding: 10px;
+    border: 1px solid black;
+    border-radius: 5px;
+    resize: none;
+}
+
+.editButtons {
+    display: flex;
+    margin-top: 0px;
+    padding-top: 0px;
+    margin-bottom: 15px; 
+}
+
+.editButtons input {
+    margin-right: 10px; /* Adjust the right margin to add space */
+}
+
+.editButtons button {
+    margin-left: 10px; /* Adjust the left margin to add space */
+    background-color: #864f3b;
+    cursor: pointer;
+    height: 35px;
+    align-self: flex-end;
+}
+
+.editButtons button:hover {
+    background-color: #ff6347;
 }

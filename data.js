@@ -2,6 +2,7 @@
 
 // this package behaves just like the mysql one, but uses async await instead of callbacks.
 const mysql = require(`mysql-await`); // npm install mysql-await
+const bcrypt = require('bcrypt');
 
 // first -- I want a connection pool: https://www.npmjs.com/package/mysql#pooling-connections
 // this is used a bit differently, but I think it's just better -- especially if server is doing heavy work.
@@ -15,17 +16,18 @@ var connPool = mysql.createPool({
 
 async function loginUser(usernameOrEmail, userPassword) {
   try {
-    const resultWithUsername = await connPool.awaitQuery("SELECT * FROM user WHERE username=? AND userPassword=?", [usernameOrEmail, userPassword])
-    const resultWithEmail = await connPool.awaitQuery("SELECT * FROM user WHERE email=? AND userPassword=?", [usernameOrEmail, userPassword])
-    if (resultWithUsername.length == 1) {
-      return await connPool.awaitQuery("SELECT userID FROM user WHERE username=?", [usernameOrEmail]);
-    } else if (resultWithEmail.length == 1) {
-      return await connPool.awaitQuery("SELECT userID FROM user WHERE email=?", [usernameOrEmail]);
+    const storedHashWithUsername = await connPool.awaitQuery("SELECT userPassword FROM user WHERE username=?", [usernameOrEmail]);
+    const storedHashWithPassword = await connPool.awaitQuery("SELECT userPassword FROM user WHERE email=?", [usernameOrEmail]);
+
+    if (storedHashWithUsername.length === 1 && await bcrypt.compare(userPassword, storedHashWithUsername[0].userPassword)) {
+        return await connPool.awaitQuery("SELECT userID FROM user WHERE username=?", [usernameOrEmail]);
+    } else if (storedHashWithPassword.length === 1 && await bcrypt.compare(userPassword, storedHashWithPassword[0].userPassword)) {
+        return await connPool.awaitQuery("SELECT userID FROM user WHERE email=?", [usernameOrEmail]);
     } else {
       return false;
     }
   } catch (error) {
-    console.log(error.message);
+    console.error(error.message);
     return false;
   }
 }
@@ -84,6 +86,16 @@ async function createPost(post, userID) {
   }
 }
 
+async function editPost(postID, postToEdit) {
+  try {
+    const result = await connPool.awaitQuery("UPDATE post SET postText=?, timeEditedOrCreated=CURRENT_TIMESTAMP WHERE postID=?", [postToEdit, postID]);
+    return result.affectedRows == 1;
+  } catch (error) {
+    console.log(error.message);
+    return false;
+  }
+}
+
 async function updateLikes(postID) {
   try {
     const result = await connPool.awaitQuery("UPDATE post SET likes=likes+1 WHERE postID=?;", [postID]);
@@ -105,6 +117,13 @@ async function getAllPosts(sortingMethod) {
       return false;
     }
 
+    // console.log(result)
+
+    // Empty
+    if (result.length == 0) {
+      return [];
+    }
+
     if (result.length >= 1) {
       return result;
     } else {
@@ -116,15 +135,14 @@ async function getAllPosts(sortingMethod) {
   }
 }
 
-// pagination plan:
-// 1. count the number of posts in database. -> COUNT(posts)
-// 2. Divive the number of posts by 5, the remainder, if any will be on the last page.
-// 3. This number will be the number of pages. So when we get all the posts, in order desired (array)
-// 4. We see what current page they are on, and return the portion of the array that represents that page.
-// 5. Have a next button if on the first page. Then prev and next on subsequent pages. Prev only button on last page.
+async function deletePost(postID) {
+  try {
+    let result = await connPool.awaitQuery("DELETE FROM post WHERE postID=?;", [postID]);
+    return result.affectedRows === 1;
+  } catch(error) {
+    console.log(error.message)
+    return false;
+  }
+}
 
-
-// Scenario: User is on page 3/6 and clicks next. We want to return the portion in the array [5*4....(5*5))
-// for (let i = 5*pageNumber; i < 5*pageNumber+1; i++)
-
-module.exports = {checkUserExists, addUser, loginUser, createPost, getAllPosts, updateLikes}
+module.exports = {checkUserExists, addUser, loginUser, createPost, getAllPosts, updateLikes, deletePost, editPost}

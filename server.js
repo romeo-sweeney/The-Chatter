@@ -1,11 +1,13 @@
-// Imports
+// Objects
 const data = require('./data');
 const express = require('express');
 const session = require('express-session');
+const bcrypt = require('bcrypt');
 
-// Objects
+// Variables
 const app = express();
 const port = 4131;
+const saltRounds = 10;
 
 // Middleware
 app.use(session({
@@ -17,7 +19,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use('/resources', express.static('resources'));
 
-// Pug templates
+// Setting pug templates
 app.set("views", "templates");
 app.set("view engine", "pug");
 
@@ -56,34 +58,34 @@ app.post('/loggedIn', (req, res) => {
     });
 });
 
-app.post('/signupPost', (req, res) => {
-  data.checkUserExists(req.body.username, req.body.email)
-    .then((result) => {
-      if (result) {
-        console.log("user already exists in db, redirecting to login");
-        res.render("login");
-      } else {
-        data.addUser(req.body.firstName, req.body.lastName, req.body.username, req.body.userPassword, req.body.email)
-          .then((result) => {
-            if (result) {
-              console.log("Success adding user to db, redirecting to login");
-              res.render("login");
-            } else {
-              console.log("Failed adding user to db, redirecting to signup");
-              res.render("signup");
-            }
-          })
-          .catch((error) => {
-            console.error(error.message);
-            res.render("signup");
-          });
-      }
-    })
-    .catch((error) => {
-      console.error(error.message);
+app.post('/signupPost', async (req, res) => {
+  try {
+    const userExists = await data.checkUserExists(req.body.username, req.body.email);
+
+    if (userExists) {
+      console.log("User already exists in the database. Redirecting to login.");
+      return res.render("login");
+    }
+
+    const password = req.body.userPassword;
+    const salt = await bcrypt.genSalt(saltRounds);
+    
+    const hashedPassword = await bcrypt.hash(password, salt);
+    const addUserResult = await data.addUser(req.body.firstName, req.body.lastName, req.body.username, hashedPassword, req.body.email);
+
+    if (addUserResult) {
+      console.log("Success adding user to the database. Redirecting to login.");
       res.render("login");
-    });
+    } else {
+      console.log("Failed adding user to the database. Redirecting to signup.");
+      res.render("signup");
+    }
+  } catch (error) {
+    console.error(error.message);
+    res.render("signup");
+  }
 });
+
 
 app.get('/bypass', (req,res) => {
   req.session.user = { userID: '1', sortingMethod: 'newest' };
@@ -100,12 +102,14 @@ app.get('/dashboard', (req, res) => {
     }
     let offset = (page-1)*5
     const display = true;
-    console.log(req.session.user.sortingMethod);
-    data.getAllPosts(req.session.user.sortingMethod)
+    const sortingMethod = req.session.user.sortingMethod;
+    data.getAllPosts(sortingMethod)
     .then((posts)=> {
+      console.log(posts)
       if (posts) {
+        console.log('in hereee');
         let pagedPosts = posts.slice(offset, offset+5);
-        res.render("dashboard", { pagedPosts, display, page })
+        res.render("dashboard", { pagedPosts, display, page, sortingMethod})
       } else {
         console.log("error, could not get the posts");
         res.redirect("/404");
@@ -137,6 +141,23 @@ app.post('/publishPost', (req, res) => {
   });
 })
 
+app.post('/edit/:postID', (req, res) => {
+  const postID = req.params.postID;
+  const postToEdit =req.body.editPostTextArea;
+  data.editPost(postID, postToEdit)
+  .then((result) => {
+    if (result) {
+      res.redirect('/dashboard');
+    } else {
+      res.redirect('/404');
+    }
+  })
+  .catch((error) => {
+    console.error(error.message);
+    res.redirect('/dashboard');
+  });
+});
+
 app.put('/api/like', (req, res) => {
   const postID = req.body.postID;
   data.updateLikes(postID)
@@ -155,6 +176,21 @@ app.put('/api/like', (req, res) => {
 app.put('/api/sortingMethod', (req, res) => {
   req.session.user.sortingMethod = req.body.sortingMethod;
   res.status(200).send('success');
+})
+
+app.delete('/api/deletePost', (req, res) => {
+  const postID = req.body.postID;
+  data.deletePost(postID)
+  .then((result) => {
+    if (result) {
+      res.status(200).send('Post deleted for postID: '+ postID);
+    } else {
+      res.status(404).send('Could not delete postID: '+ postID);
+    }
+  })
+  .catch((error)=> {
+    console.log(error.message);
+  })
 })
 
 app.get('/logout', (req, res) => {

@@ -5,15 +5,20 @@ document.addEventListener("DOMContentLoaded", () => {
     //     heart.onclick = () => heart.classList.toggle("heartClicked");
     // }
 
-    const heartButtons = document.querySelectorAll('button[id^="heartButton"]');
-    console.log(heartButtons);
-    for (let i = 0; i < heartButtons.length; i++) {
-        const heartButton = heartButtons[i];
-        heartButton.addEventListener('click', () => {
-            const postID = parseInt(heartButton.id.replace('heartButton',''));
+    const postElements = document.querySelectorAll('[id^=postElement]');
+    
+    for (let i = 0; i < postElements.length; i++) {
+        const post = postElements[i];
+        const postID = post.id.replace('postElement','');
+        const heartButton = post.querySelector('#heartButton');
+        const deleteButton = post.querySelector('#deleteButton');
+        const editButton = post.querySelector('#editButton');
 
+        if (!heartButton) {
             console.log(postID);
-            
+        }
+
+        heartButton.addEventListener('click', () => {
             fetch('/api/like', {
                 method: 'PUT',
                 headers: {
@@ -23,10 +28,9 @@ document.addEventListener("DOMContentLoaded", () => {
             })
             .then((response)=>{
                 if (response.status === 200) {
-                    const likesNumber = document.getElementById(`likesNumber${postID}`);
+                    const likesNumber = post.querySelector('#likesNumber');
                     likesNumber.innerText = parseInt(likesNumber.innerText)+1;
-                    const heartImg = document.querySelector(`#heartButton${postID} img`);
-                    console.log(heartImg.src);
+                    const heartImg = post.querySelector('#heartImg');
                     if (heartImg.src.includes('resources/images/whiteHeart.png')) {
                         heartImg.src = 'resources/images/redHeart.png';
                     } else {
@@ -41,39 +45,95 @@ document.addEventListener("DOMContentLoaded", () => {
                 console.error(error.message);
             });
         });
-    }
 
-
-
-    console.log("Code is running");
-
-    const sorting = document.getElementById('sort');
-    
-    if (sorting) {
-        console.log("Element with ID 'sort' found");
-        console.log("Sorting value:", sorting.value);
-        sorting.addEventListener('change', ()=> {
-            fetch('/api/sortingMethod', {
-                method: 'PUT',
+        deleteButton.addEventListener('click', () => {
+            fetch('/api/deletePost', {
+                method: 'DELETE',
+                body: JSON.stringify({'postID': postID}),
                 headers: {
                     'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({'sortingMethod': sorting.value})
-            }).then((response)=>{
+                }
+            })
+            .then((response)=>{
                 if (response.status === 200) {
-                    console.log("Sorting changed")
-                    location.reload()
-
+                    console.log(`Post [${postID}] was successfully deleted`);
+                    location.reload();
                 } else {
-                    throw new Error('Error sorting could not be changed.');
+                    throw new Error(`Error: could not delete post with postID: [${postID}]`);
                 }
             })
             .catch((error) => {
                 console.log(error.message);
-            })
+            });
+        })
+
+        
+        // editButton.addEventListener('click', () => {
+        //     const currentPost = post.querySelector('#currentPost');
+        //     const editPost = post.getElementsByClassName('editPost')[0];
+        //     const editCancelButton = post.querySelector('#cancelEditButton')
+            
+        //     currentPost.style.display = "none";
+        //     editPost.style.display = "flex";
+
+        //     editButton.addEventListener('click', () => {
+        //         editPost.style.display = "none";
+        //         currentPost.style.display = "block";
+        //     });
+
+        //     editCancelButton.addEventListener('click', () => {
+        //         editPost.style.display = "none";
+        //         currentPost.style.display = "block";
+        //     });
+        // })
+
+        const editCancelButton = post.querySelector('#cancelEditButton');
+        editButton.addEventListener('click', () => {
+            const currentPost = post.querySelector('#currentPost');
+            const editPost = post.getElementsByClassName('editPost')[0];
+        
+            if (currentPost.style.display === "none") {
+                // If currentPost is hidden, switch to edit mode
+                currentPost.style.display = "block";
+                editPost.style.display = "none";
+            } else {
+                // If currentPost is visible, switch to edit mode
+                currentPost.style.display = "none";
+                editPost.style.display = "flex";
+            }
         });
-    } else {
-        console.log("Element with ID 'sort' not found");
-    }
-    
+        
+        editCancelButton.addEventListener('click', () => {
+            // Handle cancel button click to switch back to the original mode
+            const currentPost = post.querySelector('#currentPost');
+            const editPost = post.getElementsByClassName('editPost')[0];
+        
+            editPost.style.display = "none";
+            currentPost.style.display = "block";
+        });
+        
+    }    
+
+
+    const sorting = document.querySelector('#sort');
+    sorting.addEventListener('change', () => {
+        const curSortingValue = sorting.value;
+        fetch('/api/sortingMethod', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({'sortingMethod': curSortingValue})
+        }).then((response)=>{
+            if (response.status === 200) {
+                console.log("Sorting changed")
+                location.reload();
+            } else {
+                throw new Error('Error sorting could not be changed.');
+            }
+        })
+        .catch((error) => {
+            console.log(error.message);
+        })
+    });
 });
