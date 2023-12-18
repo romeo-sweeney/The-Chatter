@@ -6,7 +6,7 @@ This website uses the express framework and mysql db for the server. Pug templat
 generating dynamic content simple and efficient. 
 
 ### How to install and run:
-1: ```git clone https://github.com/romeo-sweeney/The-Chatter```
+1: ```git clone https://github.com/romeo-sweeney/The-Chatter```<br/>
 2: ```cd <The-Chatter Project>```
 3: ```npm init```
 4: ```npm install express```
