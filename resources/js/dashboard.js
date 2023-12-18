@@ -1,10 +1,4 @@
-// credits to https://stackoverflow.com/questions/65735249/how-to-make-a-css-generated-white-heart-change-its-colour-on-clicking
 document.addEventListener("DOMContentLoaded", () => {
-    // const heart = document.querySelector(".heart");
-    // if (heart) {
-    //     heart.onclick = () => heart.classList.toggle("heartClicked");
-    // }
-
     const postElements = document.querySelectorAll('[id^=postElement]');
     
     for (let i = 0; i < postElements.length; i++) {
@@ -13,11 +7,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const heartButton = post.querySelector('#heartButton');
         const deleteButton = post.querySelector('#deleteButton');
         const editButton = post.querySelector('#editButton');
-
-        if (!heartButton) {
-            console.log(postID);
-        }
-
+        
         heartButton.addEventListener('click', () => {
             fetch('/api/like', {
                 method: 'PUT',
@@ -36,7 +26,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     } else {
                         heartImg.src = 'resources/images/whiteHeart.png'
                     }
-                    // document.window.reload();
                 } else {
                     throw new Error('Error updating like count');
                 }
@@ -57,7 +46,9 @@ document.addEventListener("DOMContentLoaded", () => {
             .then((response)=>{
                 if (response.status === 200) {
                     console.log(`Post [${postID}] was successfully deleted`);
-                    location.reload();
+                    post.remove();
+                } else if (response.status === 400) {
+                    console.log(`Post [${postID}] could not be deleted`)
                 } else {
                     throw new Error(`Error: could not delete post with postID: [${postID}]`);
                 }
@@ -66,53 +57,45 @@ document.addEventListener("DOMContentLoaded", () => {
                 console.log(error.message);
             });
         })
-
         
-        // editButton.addEventListener('click', () => {
-        //     const currentPost = post.querySelector('#currentPost');
-        //     const editPost = post.getElementsByClassName('editPost')[0];
-        //     const editCancelButton = post.querySelector('#cancelEditButton')
-            
-        //     currentPost.style.display = "none";
-        //     editPost.style.display = "flex";
-
-        //     editButton.addEventListener('click', () => {
-        //         editPost.style.display = "none";
-        //         currentPost.style.display = "block";
-        //     });
-
-        //     editCancelButton.addEventListener('click', () => {
-        //         editPost.style.display = "none";
-        //         currentPost.style.display = "block";
-        //     });
-        // })
-
         const editCancelButton = post.querySelector('#cancelEditButton');
-        editButton.addEventListener('click', () => {
-            const currentPost = post.querySelector('#currentPost');
-            const editPost = post.getElementsByClassName('editPost')[0];
         
-            if (currentPost.style.display === "none") {
-                // If currentPost is hidden, switch to edit mode
-                currentPost.style.display = "block";
-                editPost.style.display = "none";
-            } else {
-                // If currentPost is visible, switch to edit mode
-                currentPost.style.display = "none";
-                editPost.style.display = "flex";
-            }
+        editButton.addEventListener('click', () => {
+            fetch('/api/checkEditingRights', {
+                method: 'PUT',
+                body: JSON.stringify({'postID': postID}),
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then((response) => {
+                if (response.status === 200) {
+                    const currentPost = post.querySelector('#currentPost');
+                    const editPost = post.getElementsByClassName('editPost')[0];
+                
+                    if (currentPost.style.display === "none") {
+                        currentPost.style.display = "block";
+                        editPost.style.display = "none";
+                    } else {
+                        currentPost.style.display = "none";
+                        editPost.style.display = "flex";
+                    }
+                }
+            })
+            .catch((error) => {
+                console.log(error.message);
+            });
         });
         
+        // If user clicks edit button again, the original post reappears.
         editCancelButton.addEventListener('click', () => {
-            // Handle cancel button click to switch back to the original mode
             const currentPost = post.querySelector('#currentPost');
             const editPost = post.getElementsByClassName('editPost')[0];
         
             editPost.style.display = "none";
             currentPost.style.display = "block";
         });
-        
-    }    
+    }
 
 
     const sorting = document.querySelector('#sort');

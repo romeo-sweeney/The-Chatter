@@ -141,11 +141,26 @@ input[type="submit"]:hover {
     font-size: 100%;
 }
 
+li.profileNav {
+    border: none;
+    background-color: #527967;
+    display: flex;
+}
+
+li.profileNav:hover {
+    background-color: #527967;
+}
+
+li.profileNav img {
+    margin-right: 10px;
+    height: 25px;
+    width: 25px;
+}
+
 .main {
     display: flex;
     flex-direction: row;
     justify-content: space-around;
-    /* justify-content: center; */
     align-items: center;
 }
 
@@ -323,11 +338,11 @@ input[type="submit"]:hover {
 }
 
 .editButtons input {
-    margin-right: 10px; /* Adjust the right margin to add space */
+    margin-right: 10px;
 }
 
 .editButtons button {
-    margin-left: 10px; /* Adjust the left margin to add space */
+    margin-left: 10px;
     background-color: #864f3b;
     cursor: pointer;
     height: 35px;

@@ -20,9 +20,9 @@ async function loginUser(usernameOrEmail, userPassword) {
     const storedHashWithPassword = await connPool.awaitQuery("SELECT userPassword FROM user WHERE email=?", [usernameOrEmail]);
 
     if (storedHashWithUsername.length === 1 && await bcrypt.compare(userPassword, storedHashWithUsername[0].userPassword)) {
-        return await connPool.awaitQuery("SELECT userID FROM user WHERE username=?", [usernameOrEmail]);
+        return await connPool.awaitQuery("SELECT userID, username FROM user WHERE username=?", [usernameOrEmail]);
     } else if (storedHashWithPassword.length === 1 && await bcrypt.compare(userPassword, storedHashWithPassword[0].userPassword)) {
-        return await connPool.awaitQuery("SELECT userID FROM user WHERE email=?", [usernameOrEmail]);
+        return await connPool.awaitQuery("SELECT userID, username FROM user WHERE email=?", [usernameOrEmail]);
     } else {
       return false;
     }
@@ -52,29 +52,6 @@ async function addUser(firstName, lastName, username, userPassword, email) {
     return false;
   }
 }
-
-
-
-// CREATE TABLE user (
-//   id INT NOT NULL AUTO_INCREMENT,
-//   firstName VARCHAR(50) NOT NULL,
-//   lastName VARCHAR(50) NOT NULL,
-//   username VARCHAR(20) NOT NULL,
-//   userPassword VARCHAR(200) NOT NULL,
-//   email VARCHAR(100) NOT NULL,
-//   PRIMARY KEY (id),
-//   UNIQUE KEY (username),
-//   UNIQUE KEY (email)
-// );
-
-// CREATE TABLE posts (
-//   id INT NOT NULL AUTO_INCREMENT,
-//   post VARCHAR(200),
-//   userID INT NOT NULL,
-//   FOREIGN KEY (userID) REFERENCES user(id),
-//   PRIMARY KEY (id)
-// );
-
 
 async function createPost(post, userID) {
   try {
@@ -117,8 +94,6 @@ async function getAllPosts(sortingMethod) {
       return false;
     }
 
-    // console.log(result)
-
     // Empty
     if (result.length == 0) {
       return [];
@@ -145,4 +120,16 @@ async function deletePost(postID) {
   }
 }
 
-module.exports = {checkUserExists, addUser, loginUser, createPost, getAllPosts, updateLikes, deletePost, editPost}
+async function checkPostOwner(userID, postID) {
+  try {
+    let result = await connPool.awaitQuery("SELECT userID FROM post WHERE userID=? AND postID=?;", [userID, postID]);
+    return result.length === 1;
+  } catch (error) {
+    console.log(error.message);
+    return false;
+  }
+}
+
+// checkPostOwner(10,102).then(console.log)
+
+module.exports = {checkUserExists, addUser, loginUser, createPost, getAllPosts, updateLikes, deletePost, editPost, checkPostOwner}

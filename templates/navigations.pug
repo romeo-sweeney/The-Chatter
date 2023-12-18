@@ -8,3 +8,6 @@ div.navigation
         if display
             li
                 a(href='/logout') Logout
+            li.profileNav
+                img(id='profileIcon', src='resources/images/profileIcon.png', alt='profile icon')
+                span(id='Account Name') #{display.username}
