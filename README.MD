@@ -10,8 +10,8 @@ generating dynamic content simple and efficient.
 1: ```git clone https://github.com/romeo-sweeney/The-Chatter```<br/>
 2: ```cd The-Chatter```<br/>
 3. ```npm install``` This will install all the dependencies listed in ```package.json```<br/>
-4: ```node tunnel.js```<br/>
+4: Run ```node tunnel.js```<br/>
 5: Authenticate as a umn.edu user to create a tunnel into the CSE labs firewall to use their database.<br/>
 6: Open a new terminal and navigate to the project.<br/>
-7: ```npm run dev```<br/>
+7: Run ```npm run dev```<br/>
 8: Navigate to the browser of choice and type: ```localhost:4131/```
